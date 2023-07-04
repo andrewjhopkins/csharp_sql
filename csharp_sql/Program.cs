@@ -6,7 +6,8 @@ namespace csharp_sql
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            var lexer = new Lexer("Testing\nsource\ncode\n");
+            lexer.Lex();
         }
     }
 }
