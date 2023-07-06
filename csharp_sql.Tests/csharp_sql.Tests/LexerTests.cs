@@ -128,7 +128,7 @@ namespace csharp_sql.Tests
         }
 
         [TestCase("'testing")]
-        //[TestCase("'testing' 'testing")]
+        [TestCase("'testing' 'testing")]
         public void LexTest_TestLexingStrings_ReturnsNoTokensIfMatchingQuoteNotFound(string source)
         { 
             var lexer = new Lexer(source);
