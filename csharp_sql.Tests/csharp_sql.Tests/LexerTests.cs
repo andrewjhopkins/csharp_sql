@@ -75,14 +75,13 @@ namespace csharp_sql.Tests
 
         public static object[] TestLexingStringsCases =
         {
-            /*
             new object[] 
             {
                 "'test' 'test2'",
                 new List<Token>
                 {
                     new Token { Location = new Location{ Column = 0, Row = 0 }, TokenType = TokenType.String, Value = "'test'" },
-                    new Token { Location = new Location{ Column = 6, Row = 0 }, TokenType = TokenType.String, Value = "'test2'" },
+                    new Token { Location = new Location{ Column = 7, Row = 0 }, TokenType = TokenType.String, Value = "'test2'" },
                 }
             },
             new object[] 
@@ -91,12 +90,11 @@ namespace csharp_sql.Tests
                 new List<Token>
                 { 
                     new Token { Location = new Location{ Column = 0, Row = 0 }, TokenType = TokenType.String, Value = "'test tes testing'" },
-                    new Token { Location = new Location{ Column = 19, Row = 0 }, TokenType = TokenType.String, Value = "'more testing'" },
-                    new Token { Location = new Location{ Column = 35, Row = 0 }, TokenType = TokenType.String, Value = "'evenmore testing'" },
-                    new Token { Location = new Location{ Column = 55, Row = 0 }, TokenType = TokenType.String, Value = "''" },
+                    new Token { Location = new Location{ Column = 20, Row = 0 }, TokenType = TokenType.String, Value = "'more testing'" },
+                    new Token { Location = new Location{ Column = 36, Row = 0 }, TokenType = TokenType.String, Value = "'evenmore testing'" },
+                    new Token { Location = new Location{ Column = 56, Row = 0 }, TokenType = TokenType.String, Value = "''" },
                 }
             },
-            */
             new object[] 
             { 
                 "'testing'\n'testing2'",
