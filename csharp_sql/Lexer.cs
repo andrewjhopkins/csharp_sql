@@ -54,20 +54,33 @@
                     case ';':
                         token.Value = $"{current}";
                         token.TokenType = TokenType.Symbol;
+                        token.Location = new Location
+                        {
+                            Column = col,
+                            Row = row,
+                        };
+                        col += 1;
                         break;
                     case '\'':
                         var nextQuoteIndex = Source.IndexOf('\'', pointer.Position + 1);
-                        if (nextQuoteIndex < -1 || nextQuoteIndex >= Source.Length)
+                        if (nextQuoteIndex < 0 || nextQuoteIndex >= Source.Length)
                         {
                             // TODO: throw error and quit
                             Console.WriteLine("Expected '");
-                            return tokens;
+                            return new Token[0];
                         }
                         if (nextQuoteIndex > 0 && nextQuoteIndex < Source.Length)
                         {
-                            token.Value = Source.Substring(pointer.Position + 1, nextQuoteIndex);
+                            token.Value = Source.Substring(pointer.Position, nextQuoteIndex + 1 - pointer.Position);
                             token.TokenType = TokenType.String;
                         }
+
+                        token.Location = new Location
+                        {
+                            Column = col,
+                            Row = row,
+                        };
+
                         col = nextQuoteIndex + 1;
                         pointer.Position = nextQuoteIndex;
                         break;
@@ -77,14 +90,12 @@
                         break;
                 }
 
-                token.Location = new Location
-                {
-                    Column = col,
-                    Row = row,
-                };
+                if (token.Location != null)
+                { 
+                    tokens.Add(token);
+                }
 
-                tokens.Add(token);
-                pointer.Position++;
+                pointer.Position += 1;
             }
 
             return tokens;
