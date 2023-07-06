@@ -39,7 +39,6 @@
             while (pointer.Position < Source.Length)
             {
                 var current = Source[pointer.Position];
-                // Console.WriteLine($"{current} {col} {row}");
                 var token = new Token();
 
                 switch (current)
@@ -85,7 +84,34 @@
                         pointer.Position = nextQuoteIndex;
                         break;
                     default:
-                        // TODO: get keyword if exists else throw error
+                        if (char.IsLetter(current))
+                        {
+                            var startIndex = pointer.Position;
+                            while (pointer.Position < Source.Length && char.IsLetter(Source[pointer.Position]))
+                            {
+                                pointer.Position += 1;
+                            }
+
+                            var value = Source.Substring(startIndex, pointer.Position - startIndex);
+
+                            token.Value = value;
+
+                            if (Keywords.Contains(value.ToLower()))
+                            {
+                                token.TokenType = TokenType.Keyword;
+                            }
+                            else
+                            {
+                                token.TokenType = TokenType.Identifier;
+                            }
+
+                            token.Location = new Location
+                            {
+                                Column = col,
+                                Row = row
+                            };
+                        }
+
                         col += 1;
                         break;
                 }

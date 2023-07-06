@@ -26,24 +26,18 @@ namespace csharp_sql.Tests
         [TestCase(";")]
         public void LexTest_TestLexingSymbols_ReturnsExpectedTokenWithSymbolType(string source)
         {
-            var expectedTokens = new List<Token> {
-                    new Token { Location = new Location{ Column = 0, Row = 0 }, TokenType = TokenType.Symbol, Value = $"{source}" }
-                };
+            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = TokenType.Symbol, Value = $"{source}" };
 
             var lexer = new Lexer(source);
             var tokens = lexer.Lex();
 
-            Assert.That(tokens.Count(), Is.EqualTo(expectedTokens.Count()));
-            for (var i = 0; i < expectedTokens.Count(); i++)
-            {
-                var expectedToken = expectedTokens.ElementAt(i);
-                var actualToken = tokens.ElementAt(i);
+            Assert.That(tokens.Count(), Is.EqualTo(1));
+            var actualToken = tokens.ElementAt(0);
 
-                Assert.That(expectedToken.TokenType, Is.EqualTo(actualToken.TokenType));
-                Assert.That(expectedToken.Value, Is.EqualTo(actualToken.Value));
-                Assert.That(expectedToken.Location.Column, Is.EqualTo(actualToken.Location.Column));
-                Assert.That(expectedToken.Location.Row, Is.EqualTo(actualToken.Location.Row));
-            }
+            Assert.That(expectedToken.TokenType, Is.EqualTo(actualToken.TokenType));
+            Assert.That(expectedToken.Value, Is.EqualTo(actualToken.Value));
+            Assert.That(expectedToken.Location.Column, Is.EqualTo(actualToken.Location.Column));
+            Assert.That(expectedToken.Location.Row, Is.EqualTo(actualToken.Location.Row));
         }
 
         [TestCase("''")]
@@ -53,24 +47,18 @@ namespace csharp_sql.Tests
         [TestCase("'*dje*$%@#$'")]
         public void LexTest_TestLexingString_ReturnsExpectedTokenWithStringType(string source)
         {
-            var expectedTokens = new List<Token> {
-                    new Token { Location = new Location{ Column = 0, Row = 0 }, TokenType = TokenType.String, Value = $"{source}" }
-                };
+            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = TokenType.String, Value = $"{source}" };
 
             var lexer = new Lexer(source);
             var tokens = lexer.Lex();
 
-            Assert.That(tokens.Count(), Is.EqualTo(expectedTokens.Count()));
-            for (var i = 0; i < expectedTokens.Count(); i++)
-            {
-                var expectedToken = expectedTokens.ElementAt(i);
-                var actualToken = tokens.ElementAt(i);
+            Assert.That(tokens.Count(), Is.EqualTo(1));
+            var actualToken = tokens.ElementAt(0);
 
-                Assert.That(expectedToken.TokenType, Is.EqualTo(actualToken.TokenType));
-                Assert.That(expectedToken.Value, Is.EqualTo(actualToken.Value));
-                Assert.That(expectedToken.Location.Column, Is.EqualTo(actualToken.Location.Column));
-                Assert.That(expectedToken.Location.Row, Is.EqualTo(actualToken.Location.Row));
-            }
+            Assert.That(expectedToken.TokenType, Is.EqualTo(actualToken.TokenType));
+            Assert.That(expectedToken.Value, Is.EqualTo(actualToken.Value));
+            Assert.That(expectedToken.Location.Column, Is.EqualTo(actualToken.Location.Column));
+            Assert.That(expectedToken.Location.Row, Is.EqualTo(actualToken.Location.Row));
         }
 
         public static object[] TestLexingStringsCases =
@@ -133,6 +121,32 @@ namespace csharp_sql.Tests
             var tokens = lexer.Lex();
 
             Assert.That(tokens.Count(), Is.EqualTo(0));
+        }
+
+        [TestCase("select")]
+        [TestCase("from")]
+        [TestCase("as")]
+        [TestCase("table")]
+        [TestCase("create")]
+        [TestCase("insert")]
+        [TestCase("into")]
+        [TestCase("values")]
+        [TestCase("int")]
+        [TestCase("text")]
+        public void LexTest_TestLexingKeywords_ReturnsTokenWithKeywordType(string source)
+        { 
+            var lexer = new Lexer(source);
+            var tokens = lexer.Lex();
+
+            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = TokenType.Keyword, Value = $"{source}" };
+            Assert.That(tokens.Count(), Is.EqualTo(1));
+
+            var actualToken = tokens.ElementAt(0);
+
+            Assert.That(expectedToken.TokenType, Is.EqualTo(actualToken.TokenType));
+            Assert.That(expectedToken.Value, Is.EqualTo(actualToken.Value));
+            Assert.That(expectedToken.Location.Column, Is.EqualTo(actualToken.Location.Column));
+            Assert.That(expectedToken.Location.Row, Is.EqualTo(actualToken.Location.Row));
         }
     }
 }

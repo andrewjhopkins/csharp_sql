@@ -7,6 +7,7 @@
         String,
         Numeric,
         Bool,
-        Null
+        Null,
+        Identifier
     }
 }
