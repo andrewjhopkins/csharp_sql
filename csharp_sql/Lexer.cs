@@ -34,11 +34,11 @@
 
             var row = 0;
             var col = 0;
-            var pointer = new Pointer();
+            var cursor = 0;
 
-            while (pointer.Position < Source.Length)
+            while (cursor < Source.Length)
             {
-                var current = Source[pointer.Position];
+                var current = Source[cursor];
                 var token = new Token();
 
                 switch (current)
@@ -61,7 +61,7 @@
                         col += 1;
                         break;
                     case '\'':
-                        var nextQuoteIndex = Source.IndexOf('\'', pointer.Position + 1);
+                        var nextQuoteIndex = Source.IndexOf('\'', cursor + 1);
                         if (nextQuoteIndex < 0 || nextQuoteIndex >= Source.Length)
                         {
                             // TODO: throw error and quit
@@ -70,7 +70,7 @@
                         }
                         if (nextQuoteIndex > 0 && nextQuoteIndex < Source.Length)
                         {
-                            token.Value = Source.Substring(pointer.Position, nextQuoteIndex + 1 - pointer.Position);
+                            token.Value = Source.Substring(cursor, nextQuoteIndex + 1 - cursor);
                             token.TokenType = TokenType.String;
                         }
 
@@ -81,18 +81,18 @@
                         };
 
                         col = nextQuoteIndex + 1;
-                        pointer.Position = nextQuoteIndex;
+                        cursor = nextQuoteIndex;
                         break;
                     default:
                         if (char.IsLetter(current))
                         {
-                            var startIndex = pointer.Position;
-                            while (pointer.Position < Source.Length && char.IsLetter(Source[pointer.Position]))
+                            var startIndex = cursor;
+                            while (cursor < Source.Length && char.IsLetter(Source[cursor]))
                             {
-                                pointer.Position += 1;
+                                cursor += 1;
                             }
 
-                            var value = Source.Substring(startIndex, pointer.Position - startIndex);
+                            var value = Source.Substring(startIndex, cursor - startIndex);
 
                             token.Value = value;
 
@@ -111,20 +111,20 @@
                                 Row = row
                             };
 
-                            col += (pointer.Position - startIndex);
+                            col += (cursor - startIndex);
 
                             // Re read non letter
-                            pointer.Position -= 1;
+                            cursor -= 1;
                         }
                         else if (char.IsDigit(current))
                         {
-                            var startIndex = pointer.Position;
-                            while (pointer.Position < Source.Length && char.IsDigit(Source[pointer.Position]))
+                            var startIndex = cursor;
+                            while (cursor < Source.Length && char.IsDigit(Source[cursor]))
                             {
-                                pointer.Position += 1;
+                                cursor += 1;
                             }
 
-                            var value = Source.Substring(startIndex, pointer.Position - startIndex);
+                            var value = Source.Substring(startIndex, cursor - startIndex);
                             token.Value = value;
                             token.TokenType = TokenType.Numeric;
                             token.Location = new Location
@@ -133,10 +133,10 @@
                                 Row = row
                             };
 
-                            col += (pointer.Position - startIndex);
+                            col += (cursor - startIndex);
 
                             // Re read non digit
-                            pointer.Position -= 1;
+                            cursor -= 1;
                         }
                         else if (current == ' ')
                         {
@@ -156,7 +156,7 @@
                     tokens.Add(token);
                 }
 
-                pointer.Position += 1;
+                cursor += 1;
             }
 
             return tokens;
