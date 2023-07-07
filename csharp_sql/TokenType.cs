@@ -6,7 +6,6 @@
         Keyword,
         String,
         Numeric,
-        Bool,
-        Null
+        Identifier
     }
 }
