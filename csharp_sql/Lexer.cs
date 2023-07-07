@@ -110,9 +110,44 @@
                                 Column = col,
                                 Row = row
                             };
+
+                            col += (pointer.Position - startIndex);
+
+                            // Re read non letter
+                            pointer.Position -= 1;
+                        }
+                        else if (char.IsDigit(current))
+                        {
+                            var startIndex = pointer.Position;
+                            while (pointer.Position < Source.Length && char.IsDigit(Source[pointer.Position]))
+                            {
+                                pointer.Position += 1;
+                            }
+
+                            var value = Source.Substring(startIndex, pointer.Position - startIndex);
+                            token.Value = value;
+                            token.TokenType = TokenType.Numeric;
+                            token.Location = new Location
+                            {
+                                Column = col,
+                                Row = row
+                            };
+
+                            col += (pointer.Position - startIndex);
+
+                            // Re read non digit
+                            pointer.Position -= 1;
+                        }
+                        else if (current == ' ')
+                        {
+                            col += 1;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Character: {current} not recognized. col: {col} row: {row}");
+                            return new Token[0];
                         }
 
-                        col += 1;
                         break;
                 }
 
