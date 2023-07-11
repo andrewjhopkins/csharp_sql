@@ -52,7 +52,8 @@
                     case ')':
                     case ';':
                         token.Value = $"{current}";
-                        token.TokenType = TokenType.Symbol;
+                        //TODO: error handle this if not found
+                        token.TokenType = Helper.SymbolToTokenType(current);
                         token.Location = new Location
                         {
                             Column = col,

@@ -2,7 +2,10 @@
 {
     public enum TokenType
     {
-        Symbol,
+        Comma,
+        LeftParen,
+        RightParen,
+        Semicolon,
         Keyword,
         String,
         Numeric,
