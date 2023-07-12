@@ -8,7 +8,7 @@ namespace csharp_sql
 {
     public  static class Helper
     {
-        private static Dictionary<char, TokenType> SymbolToTokenTypeMapping = new Dictionary<char, TokenType>
+        public static Dictionary<char, TokenType> SymbolToTokenTypeMapping = new Dictionary<char, TokenType>
         {
             { ',', TokenType.Comma },
             { '(', TokenType.LeftParen },
@@ -16,15 +16,18 @@ namespace csharp_sql
             { ';', TokenType.Semicolon },
         };
 
-        public static TokenType SymbolToTokenType(char symbol)
+        public static Dictionary<string, TokenType> KeywordToTokenTypeMapping = new Dictionary<string, TokenType>
         {
-            if (SymbolToTokenTypeMapping.ContainsKey(symbol))
-            { 
-                return SymbolToTokenTypeMapping[symbol];
-            }
-
-            // TODO: Error handling
-            throw new Exception();
-        }
+            { "select", TokenType.Select },
+            { "from", TokenType.From },
+            { "as", TokenType.As },
+            { "table", TokenType.Table },
+            { "create", TokenType.Create },
+            { "insert", TokenType.Insert },
+            { "into", TokenType.Into },
+            { "values", TokenType.Values },
+            { "int", TokenType.Int },
+            { "text", TokenType.Text }
+        };
     }
 }

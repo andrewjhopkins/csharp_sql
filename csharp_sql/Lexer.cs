@@ -8,20 +8,6 @@
             Source = source;
         }
 
-        public static HashSet<String> Keywords = new HashSet<string>
-        {
-            "select",
-            "from",
-            "as",
-            "table",
-            "create",
-            "insert",
-            "into",
-            "values",
-            "int",
-            "text"
-        };
-
         public IEnumerable<Token> Lex()
         { 
             if (string.IsNullOrEmpty(Source)) 
@@ -53,7 +39,15 @@
                     case ';':
                         token.Value = $"{current}";
                         //TODO: error handle this if not found
-                        token.TokenType = Helper.SymbolToTokenType(current);
+                        if (Helper.SymbolToTokenTypeMapping.TryGetValue(current, out var symbolTokenType))
+                        {
+                            token.TokenType = symbolTokenType;
+                        }
+                        else
+                        {
+                            throw new Exception();
+                        }
+
                         token.Location = new Location
                         {
                             Column = col,
@@ -97,9 +91,9 @@
 
                             token.Value = value;
 
-                            if (Keywords.Contains(value.ToLower()))
+                            if (Helper.KeywordToTokenTypeMapping.TryGetValue(value.ToLower(), out var keywordTokenType))
                             {
-                                token.TokenType = TokenType.Keyword;
+                                token.TokenType = keywordTokenType;
                             }
                             else
                             {

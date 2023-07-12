@@ -6,7 +6,18 @@
         LeftParen,
         RightParen,
         Semicolon,
-        Keyword,
+
+        Select,
+        From,
+        As,
+        Table,
+        Create,
+        Insert,
+        Into,
+        Values,
+        Int,
+        Text,
+
         String,
         Numeric,
         Identifier
