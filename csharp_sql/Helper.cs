@@ -13,6 +13,7 @@ namespace csharp_sql
             { ',', TokenType.Comma },
             { '(', TokenType.LeftParen },
             { ')', TokenType.RightParen },
+            { '*', TokenType.Asterisk },
             { ';', TokenType.Semicolon },
         };
 

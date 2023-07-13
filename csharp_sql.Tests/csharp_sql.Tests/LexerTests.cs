@@ -23,6 +23,7 @@ namespace csharp_sql.Tests
         [TestCase(",")]
         [TestCase("(")]
         [TestCase(")")]
+        [TestCase("*")]
         [TestCase(";")]
         public void LexTest_TestLexingSymbols_ReturnsExpectedTokenWithSymbolType(string source)
         {

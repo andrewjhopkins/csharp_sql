@@ -36,6 +36,7 @@
                     case ',':
                     case '(':
                     case ')':
+                    case '*':
                     case ';':
                         token.Value = $"{current}";
                         //TODO: error handle this if not found

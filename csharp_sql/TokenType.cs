@@ -5,6 +5,7 @@
         Comma,
         LeftParen,
         RightParen,
+        Asterisk,
         Semicolon,
 
         Select,
