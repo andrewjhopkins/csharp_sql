@@ -101,25 +101,17 @@ namespace csharp_sql
 
             while (true) 
             {
-                if (cursor >= tokens.Count())
+                if (cursor >= tokens.Count() || tokens.ElementAt(cursor).TokenType == TokenType.From)
                 {
                     return new ParseSelectItemsResponse
                     {
                         SelectItems = selectItems,
-                        NextCursor = cursor
+                        NextCursor = cursor,
+                        Ok = true,
                     };
                 }
 
                 var current = tokens.ElementAt(cursor);
-
-                if (current.TokenType == TokenType.From)
-                {
-                    return new ParseSelectItemsResponse
-                    {
-                        SelectItems = selectItems,
-                        NextCursor = cursor
-                    };
-                }
 
                 if (selectItems.Count() > 0)
                 {
@@ -140,7 +132,7 @@ namespace csharp_sql
                 }
                 else
                 {
-                    var parseExpressionResponse = ParseExpression(tokens, initialCursor);
+                    var parseExpressionResponse = ParseExpression(tokens, cursor);
                     if (!parseExpressionResponse.Ok)
                     {
                         throw new Exception("Expected expression");
@@ -149,9 +141,8 @@ namespace csharp_sql
                     cursor = parseExpressionResponse.NextCursor;
                     selectItem.Expression = parseExpressionResponse.Expression;
 
-                    if (tokens.ElementAt(cursor).TokenType == TokenType.As)
+                    if (cursor < tokens.Count() && tokens.ElementAt(cursor).TokenType == TokenType.As)
                     {
-                        cursor += 1;
                         var identifierToken = tokens.ElementAt(cursor);
                         if (identifierToken.TokenType != TokenType.Identifier)
                         {
@@ -181,10 +172,12 @@ namespace csharp_sql
                     TokenLiteral = current,
                 };
 
+                cursor += 1;
+
                 var response = new ParseExpressionResponse()
                 {
                     Expression = expression,
-                    NextCursor = cursor + 1,
+                    NextCursor = cursor,
                     Ok = true
                 };
 

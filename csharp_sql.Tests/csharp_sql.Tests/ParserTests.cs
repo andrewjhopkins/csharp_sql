@@ -1,16 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace csharp_sql.Tests
+﻿namespace csharp_sql.Tests
 {
     public class ParserTests
     {
         [SetUp]
         public void Setup()
         {
+        }
+
+        [Test]
+        public void ParserTest_ParseSelectItems_ReturnsExpectedSelectItemsResponse()
+        {
+            var values = new[] { "id", "username", "password" };
+
+            var tokens = new[] {
+                new Token { TokenType = TokenType.Identifier, Value = values[0], Location = new Location { Column = 1, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 2, Row = 1 } },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 4, Row = 1} },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[2], Location = new Location { Column = 5, Row = 1 } },
+            };
+
+            var parser = new Parser();
+            var selectItemsResponse = parser.ParseSelectItems(tokens, 0);
+
+            Assert.IsTrue(selectItemsResponse.Ok == true);
+            Assert.IsTrue(selectItemsResponse.SelectItems.Count() == 3);
+
+            for (var i = 0; i < selectItemsResponse.SelectItems.Count(); i++)
+            {
+                var item = selectItemsResponse.SelectItems.ElementAt(i);
+                Assert.IsTrue(item.Expression.TokenLiteral.TokenType == TokenType.Identifier);
+                Assert.IsTrue(item.Expression.TokenLiteral.Value == values[i]);
+                Assert.IsTrue(item.Asterisk == false);
+                Assert.IsTrue(item.AsToken == null);
+            }
+        }
+
+        [Test]
+        public void ParserTest_ParseSelectItems_ReturnsExpectedSelectItemsResponseWithAsIdentifier()
+        {
+            var values = new[] { "id", "username", "password" };
+
+            var tokens = new[] {
+                new Token { TokenType = TokenType.Identifier, Value = values[0], Location = new Location { Column = 1, Row = 1 } },
+                new Token { TokenType = TokenType.As, Value = values[0], Location = new Location { Column = 2, Row = 1 } },
+                new Token { TokenType = TokenType.Identifier, Value = values[0], Location = new Location { Column = 3, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 4, Row = 1 } },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[1], Location = new Location { Column = 5, Row = 1 } },
+                new Token { TokenType = TokenType.As, Value = values[1], Location = new Location { Column = 6, Row = 1 } },
+                new Token { TokenType = TokenType.Identifier, Value = values[1], Location = new Location { Column = 7, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 8, Row = 1} },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[2], Location = new Location { Column = 9, Row = 1 } },
+                new Token { TokenType = TokenType.As, Value = values[2], Location = new Location { Column = 10, Row = 1 } },
+                new Token { TokenType = TokenType.Identifier, Value = values[2], Location = new Location { Column = 11, Row = 1 } },
+            };
+
+            var parser = new Parser();
+            var selectItemsResponse = parser.ParseSelectItems(tokens, 0);
+
+            Assert.IsTrue(selectItemsResponse.Ok == true);
+            Assert.IsTrue(selectItemsResponse.SelectItems.Count() == 3);
+
+            for (var i = 0; i < selectItemsResponse.SelectItems.Count(); i++)
+            {
+                var item = selectItemsResponse.SelectItems.ElementAt(i);
+                Assert.IsTrue(item.Expression.TokenLiteral.TokenType == TokenType.Identifier);
+                Assert.IsTrue(item.Expression.TokenLiteral.Value == values[i]);
+                Assert.IsTrue(item.Asterisk == false);
+                Assert.IsTrue(item.AsToken == null);
+            }
         }
 
         [TestCase(TokenType.Numeric, "123")]
