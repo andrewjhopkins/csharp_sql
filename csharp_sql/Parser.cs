@@ -41,21 +41,38 @@ namespace csharp_sql
             var cursor = initialCursor;
             if (tokens.ElementAt(cursor).TokenType != TokenType.Select) 
             {
-                //TODO: Fix this
+                //TODO: fix this
                 return null;
             }
 
             cursor += 1;
 
             var selectStatement = new SelectStatement();
-            
-            // parse select items
-            //var selectItems = ParseSelectItems()
 
-            return null;
+            var parseSelectItemsResponse = ParseSelectItems(tokens, cursor);
+
+            selectStatement.Items = parseSelectItemsResponse.SelectItems;
+            cursor = parseSelectItemsResponse.NextCursor;
+
+            if (tokens.ElementAt(cursor).TokenType != TokenType.From)
+            {
+                throw new Exception("Expected From");
+            }
+
+            cursor += 1;
+
+            var identifierToken = tokens.ElementAt(cursor);
+
+            if (identifierToken.TokenType != TokenType.Identifier)
+            {
+                throw new Exception("Expected Identifier");
+            }
+
+            selectStatement.From = new FromItem { Table = identifierToken };
+            return selectStatement;
         }
 
-        private IEnumerable<SelectItem> ParseSelectItems(IEnumerable<Token> tokens, int initialCursor)
+        private ParseSelectItemsResponse ParseSelectItems(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
             var selectItems = new List<SelectItem>();
@@ -64,14 +81,22 @@ namespace csharp_sql
             {
                 if (cursor >= tokens.Count())
                 {
-                    return selectItems;
+                    return new ParseSelectItemsResponse
+                    {
+                        SelectItems = selectItems,
+                        NextCursor = cursor
+                    };
                 }
 
                 var current = tokens.ElementAt(cursor);
 
                 if (current.TokenType == TokenType.From)
                 {
-                    return selectItems;
+                    return new ParseSelectItemsResponse
+                    {
+                        SelectItems = selectItems,
+                        NextCursor = cursor
+                    };
                 }
 
                 if (selectItems.Count() > 0)
@@ -118,8 +143,6 @@ namespace csharp_sql
 
                 selectItems.Add(selectItem);
             }
-
-            return selectItems;
         }
 
         private ParseExpressionResponse ParseExpression(IEnumerable<Token> tokens, int initialCursor)
