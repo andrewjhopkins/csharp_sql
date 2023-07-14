@@ -6,7 +6,6 @@ namespace csharp_sql
     {
         public IEnumerable<IStatement> Parse(IEnumerable<Token> tokens)
         {
-
             if (tokens.Count() == 0)
             {
                 throw new Exception();
@@ -23,26 +22,43 @@ namespace csharp_sql
             var cursor = 0;
 
             while (cursor < tokens.Count()) 
-            { 
+            {
+                var parseStatementResponse = ParseStatement(tokens, cursor);
+                ast.Add(parseStatementResponse.Statement);
+                cursor = parseStatementResponse.NextCursor;
             }
 
             return ast;
         }
 
-        public IStatement ParseStatement(IEnumerable<Token> tokens, int initialCursor)
+        public ParseStatementResponse ParseStatement(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
-            var test = ParseSelectStatement(tokens, cursor);
-            return test;
+            var parseSelectResponse = ParseSelectStatement(tokens, cursor);
+
+            if (parseSelectResponse.Ok)
+            {
+                return new ParseStatementResponse
+                {
+                    Statement = parseSelectResponse.SelectStatement,
+                    NextCursor = parseSelectResponse.NextCursor
+                };
+            }
+
+
+            return null;
         }
 
-        public SelectStatement ParseSelectStatement(IEnumerable<Token> tokens, int initialCursor)
+        public ParseSelectStatementResponse ParseSelectStatement(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
             if (tokens.ElementAt(cursor).TokenType != TokenType.Select) 
             {
-                //TODO: fix this
-                return null;
+                return new ParseSelectStatementResponse
+                {
+                    Ok = false,
+                    NextCursor = cursor
+                };
             }
 
             cursor += 1;
@@ -69,10 +85,16 @@ namespace csharp_sql
             }
 
             selectStatement.From = new FromItem { Table = identifierToken };
-            return selectStatement;
+
+            return new ParseSelectStatementResponse
+            {
+                SelectStatement = selectStatement,
+                Ok = true,
+                NextCursor = cursor + 1
+            };
         }
 
-        private ParseSelectItemsResponse ParseSelectItems(IEnumerable<Token> tokens, int initialCursor)
+        public ParseSelectItemsResponse ParseSelectItems(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
             var selectItems = new List<SelectItem>();
@@ -145,7 +167,7 @@ namespace csharp_sql
             }
         }
 
-        private ParseExpressionResponse ParseExpression(IEnumerable<Token> tokens, int initialCursor)
+        public ParseExpressionResponse ParseExpression(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
 
