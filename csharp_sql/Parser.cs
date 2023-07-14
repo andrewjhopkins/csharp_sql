@@ -92,34 +92,65 @@ namespace csharp_sql
                     cursor += 1;
                 }
                 else
-                { 
-                    //var expression = ParseExpression()
-                     
+                {
+                    var parseExpressionResponse = ParseExpression(tokens, initialCursor);
+                    if (!parseExpressionResponse.Ok)
+                    {
+                        throw new Exception("Expected expression");
+                    }
 
+                    cursor = parseExpressionResponse.NextCursor;
+                    selectItem.Expression = parseExpressionResponse.Expression;
+
+                    if (tokens.ElementAt(cursor).TokenType == TokenType.As)
+                    {
+                        cursor += 1;
+                        var identifierToken = tokens.ElementAt(cursor);
+                        if (identifierToken.TokenType != TokenType.Identifier)
+                        {
+                            throw new Exception("Expected identifier");
+                        }
+
+                        selectItem.AsToken = identifierToken;
+                        cursor += 1;
+                    }
                 }
 
+                selectItems.Add(selectItem);
             }
+
+            return selectItems;
         }
 
         private ParseExpressionResponse ParseExpression(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
 
+            var current = tokens.ElementAt(cursor);
             var kinds = new[] { TokenType.Identifier, TokenType.Numeric, TokenType.String };
 
-            foreach (var tokenKind in kinds)
-            { 
-                // parseToken
+            if (kinds.Contains(current.TokenType))
+            {
+                var expression = new Expression
+                {
+                    TokenLiteral = current,
+                };
 
+                var response = new ParseExpressionResponse()
+                {
+                    Expression = expression,
+                    NextCursor = cursor + 1,
+                    Ok = true
+                };
+
+                return response;
             }
 
-            return new ParseExpressionResponse();
-        }
-
-        private void ParseToken()
-        { 
-
-
+            return new ParseExpressionResponse()
+            {
+                NextCursor = initialCursor,
+                Ok = false,
+            };
         }
     }
 }

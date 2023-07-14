@@ -4,8 +4,8 @@ namespace csharp_sql
 {
     public class ParseExpressionResponse
     {
-        int NextCursor { get; set; }
-        Expression Expression { get; set; }
-        bool Ok { get; set; }
+        public int NextCursor { get; set; }
+        public Expression Expression { get; set; }
+        public bool Ok { get; set; }
     }
 }
