@@ -2,8 +2,23 @@
 {
     public enum TokenType
     {
-        Symbol,
-        Keyword,
+        Comma,
+        LeftParen,
+        RightParen,
+        Asterisk,
+        Semicolon,
+
+        Select,
+        From,
+        As,
+        Table,
+        Create,
+        Insert,
+        Into,
+        Values,
+        Int,
+        Text,
+
         String,
         Numeric,
         Identifier

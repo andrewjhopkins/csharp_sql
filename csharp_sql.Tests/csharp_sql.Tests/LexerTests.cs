@@ -23,10 +23,11 @@ namespace csharp_sql.Tests
         [TestCase(",")]
         [TestCase("(")]
         [TestCase(")")]
+        [TestCase("*")]
         [TestCase(";")]
         public void LexTest_TestLexingSymbols_ReturnsExpectedTokenWithSymbolType(string source)
         {
-            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = TokenType.Symbol, Value = $"{source}" };
+            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = Helper.SymbolToTokenTypeMapping[source[0]], Value = $"{source}" };
 
             var lexer = new Lexer(source);
             var tokens = lexer.Lex();
@@ -86,7 +87,7 @@ namespace csharp_sql.Tests
             var lexer = new Lexer(source);
             var tokens = lexer.Lex();
 
-            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = TokenType.Keyword, Value = $"{source}" };
+            var expectedToken = new Token { Location = new Location { Column = 0, Row = 0 }, TokenType = Helper.KeywordToTokenTypeMapping[source.ToLower()], Value = $"{source}" };
             Assert.That(tokens.Count(), Is.EqualTo(1));
 
             var actualToken = tokens.ElementAt(0);
@@ -151,11 +152,11 @@ namespace csharp_sql.Tests
                 "SELECT id FROM Users;",
                 new List<Token>
                 { 
-                    new Token { Location = new Location { Column = 0, Row = 0}, TokenType = TokenType.Keyword, Value = "SELECT" },
+                    new Token { Location = new Location { Column = 0, Row = 0}, TokenType = TokenType.Select, Value = "SELECT" },
                     new Token { Location = new Location { Column = 7, Row = 0}, TokenType = TokenType.Identifier, Value = "id" },
-                    new Token { Location = new Location { Column = 10, Row = 0}, TokenType = TokenType.Keyword, Value = "FROM" },
+                    new Token { Location = new Location { Column = 10, Row = 0}, TokenType = TokenType.From, Value = "FROM" },
                     new Token { Location = new Location { Column = 15, Row = 0}, TokenType = TokenType.Identifier, Value = "Users" },
-                    new Token { Location = new Location { Column = 20, Row = 0}, TokenType = TokenType.Symbol, Value = ";" },
+                    new Token { Location = new Location { Column = 20, Row = 0}, TokenType = TokenType.Semicolon, Value = ";" },
                 }
             },
             new object[] 
@@ -163,25 +164,25 @@ namespace csharp_sql.Tests
                 "InSeRt  INTO earnings (quarter, revenue, cogs) VALUES ('Q42023', 13241, 89302);",
                 new List<Token>
                 { 
-                    new Token { Location = new Location { Column = 0, Row = 0}, TokenType = TokenType.Keyword, Value = "InSeRt" },
-                    new Token { Location = new Location { Column = 8, Row = 0}, TokenType = TokenType.Keyword, Value = "INTO" },
+                    new Token { Location = new Location { Column = 0, Row = 0}, TokenType = TokenType.Insert, Value = "InSeRt" },
+                    new Token { Location = new Location { Column = 8, Row = 0}, TokenType = TokenType.Into, Value = "INTO" },
                     new Token { Location = new Location { Column = 13, Row = 0}, TokenType = TokenType.Identifier, Value = "earnings" },
-                    new Token { Location = new Location { Column = 22, Row = 0}, TokenType = TokenType.Symbol, Value = "(" },
+                    new Token { Location = new Location { Column = 22, Row = 0}, TokenType = TokenType.LeftParen, Value = "(" },
                     new Token { Location = new Location { Column = 23, Row = 0}, TokenType = TokenType.Identifier, Value = "quarter" },
-                    new Token { Location = new Location { Column = 30, Row = 0}, TokenType = TokenType.Symbol, Value = "," },
+                    new Token { Location = new Location { Column = 30, Row = 0}, TokenType = TokenType.Comma, Value = "," },
                     new Token { Location = new Location { Column = 32, Row = 0}, TokenType = TokenType.Identifier, Value = "revenue" },
-                    new Token { Location = new Location { Column = 39, Row = 0}, TokenType = TokenType.Symbol, Value = "," },
+                    new Token { Location = new Location { Column = 39, Row = 0}, TokenType = TokenType.Comma, Value = "," },
                     new Token { Location = new Location { Column = 41, Row = 0}, TokenType = TokenType.Identifier, Value = "cogs" },
-                    new Token { Location = new Location { Column = 45, Row = 0}, TokenType = TokenType.Symbol, Value = ")" },
-                    new Token { Location = new Location { Column = 47, Row = 0}, TokenType = TokenType.Keyword, Value = "VALUES" },
-                    new Token { Location = new Location { Column = 54, Row = 0}, TokenType = TokenType.Symbol, Value = "(" },
+                    new Token { Location = new Location { Column = 45, Row = 0}, TokenType = TokenType.RightParen, Value = ")" },
+                    new Token { Location = new Location { Column = 47, Row = 0}, TokenType = TokenType.Values, Value = "VALUES" },
+                    new Token { Location = new Location { Column = 54, Row = 0}, TokenType = TokenType.LeftParen, Value = "(" },
                     new Token { Location = new Location { Column = 55, Row = 0}, TokenType = TokenType.String, Value = "'Q42023'" },
-                    new Token { Location = new Location { Column = 63, Row = 0}, TokenType = TokenType.Symbol, Value = "," },
+                    new Token { Location = new Location { Column = 63, Row = 0}, TokenType = TokenType.Comma, Value = "," },
                     new Token { Location = new Location { Column = 65, Row = 0}, TokenType = TokenType.Numeric, Value = "13241" },
-                    new Token { Location = new Location { Column = 70, Row = 0}, TokenType = TokenType.Symbol, Value = "," },
+                    new Token { Location = new Location { Column = 70, Row = 0}, TokenType = TokenType.Comma, Value = "," },
                     new Token { Location = new Location { Column = 72, Row = 0}, TokenType = TokenType.Numeric, Value = "89302" },
-                    new Token { Location = new Location { Column = 77, Row = 0}, TokenType = TokenType.Symbol, Value = ")" },
-                    new Token { Location = new Location { Column = 78, Row = 0}, TokenType = TokenType.Symbol, Value = ";" },
+                    new Token { Location = new Location { Column = 77, Row = 0}, TokenType = TokenType.RightParen, Value = ")" },
+                    new Token { Location = new Location { Column = 78, Row = 0}, TokenType = TokenType.Semicolon, Value = ";" },
                 }
             }
         };
