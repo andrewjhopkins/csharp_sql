@@ -143,6 +143,7 @@ namespace csharp_sql
 
                     if (cursor < tokens.Count() && tokens.ElementAt(cursor).TokenType == TokenType.As)
                     {
+                        cursor += 1;
                         var identifierToken = tokens.ElementAt(cursor);
                         if (identifierToken.TokenType != TokenType.Identifier)
                         {

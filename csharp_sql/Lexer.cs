@@ -39,14 +39,13 @@
                     case '*':
                     case ';':
                         token.Value = $"{current}";
-                        //TODO: error handle this if not found
                         if (Helper.SymbolToTokenTypeMapping.TryGetValue(current, out var symbolTokenType))
                         {
                             token.TokenType = symbolTokenType;
                         }
                         else
                         {
-                            throw new Exception();
+                            throw new KeyNotFoundException();
                         }
 
                         token.Location = new Location
@@ -60,9 +59,7 @@
                         var nextQuoteIndex = Source.IndexOf('\'', cursor + 1);
                         if (nextQuoteIndex < 0 || nextQuoteIndex >= Source.Length)
                         {
-                            // TODO: throw error and quit
-                            Console.WriteLine("Expected '");
-                            return new Token[0];
+                            throw new Exception("Expected '");
                         }
                         if (nextQuoteIndex > 0 && nextQuoteIndex < Source.Length)
                         {

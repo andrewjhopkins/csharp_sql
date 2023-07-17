@@ -39,6 +39,32 @@
         }
 
         [Test]
+        public void ParserTest_ParseSelectStatement_ReturnsExpectedSelectStatementResponse()
+        { 
+
+
+        }
+
+        [Test]
+        public void ParserTest_ParseSelectItems_ReturnsExpectedSelectItemsResponseWithTrueAsterisk()
+        {
+            var tokens = new[] {
+                new Token { TokenType = TokenType.Asterisk, Value = "*", Location = new Location { Column = 1, Row = 1 } },
+            };
+
+            var parser = new Parser();
+            var selectItemsResponse = parser.ParseSelectItems(tokens, 0);
+
+            Assert.IsTrue(selectItemsResponse.Ok == true);
+            Assert.IsTrue(selectItemsResponse.SelectItems.Count() == 1);
+
+            var item = selectItemsResponse.SelectItems.ElementAt(0);
+            Assert.IsTrue(item.Asterisk == true);
+            Assert.IsTrue(item.Expression == null);
+            Assert.IsTrue(item.AsToken == null);
+        }
+
+        [Test]
         public void ParserTest_ParseSelectItems_ReturnsExpectedSelectItemsResponseWithAsIdentifier()
         {
             var values = new[] { "id", "username", "password" };
@@ -71,7 +97,8 @@
                 Assert.IsTrue(item.Expression.TokenLiteral.TokenType == TokenType.Identifier);
                 Assert.IsTrue(item.Expression.TokenLiteral.Value == values[i]);
                 Assert.IsTrue(item.Asterisk == false);
-                Assert.IsTrue(item.AsToken == null);
+                Assert.IsTrue(item.AsToken.TokenType == TokenType.Identifier);
+                Assert.IsTrue(item.AsToken.Value == values[i]);
             }
         }
 
