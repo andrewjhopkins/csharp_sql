@@ -34,19 +34,34 @@ namespace csharp_sql
         public ParseStatementResponse ParseStatement(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
-            var parseSelectResponse = ParseSelectStatement(tokens, cursor);
 
-            if (parseSelectResponse.Ok)
+            switch (tokens.ElementAt(0).TokenType)
             {
-                return new ParseStatementResponse
+                //TODO: Response Ok not needed
+                case TokenType.Select:
                 {
-                    Statement = parseSelectResponse.SelectStatement,
-                    NextCursor = parseSelectResponse.NextCursor
-                };
+                    var parseSelectResponse = ParseSelectStatement(tokens, cursor);
+                    return new ParseStatementResponse
+                    {
+                        Statement = parseSelectResponse.SelectStatement,
+                        NextCursor = parseSelectResponse.NextCursor
+                    };
+                }
+                    /*
+                case TokenType.Insert:
+                { 
+                    var parseInsertReponse = ParseInsertStatement(tokens, cursor);
+                    return new ParseInsertResponse
+                    {
+                        Statements = parseInsertReponse.InsertStatement,
+                        NextCursor = parseInsertReponse.NextCursor
+                    };
+                }
+                    */
             }
 
 
-            return null;
+            throw new Exception("Could not parse statement");
         }
 
         public ParseSelectStatementResponse ParseSelectStatement(IEnumerable<Token> tokens, int initialCursor)
@@ -91,6 +106,65 @@ namespace csharp_sql
                 SelectStatement = selectStatement,
                 Ok = true,
                 NextCursor = cursor + 1
+            };
+        }
+
+        public ParseInsertStatementResponse ParseInsertStatement(IEnumerable<Token> tokens, int initialCursor)
+        {
+            var cursor = initialCursor;
+            if (tokens.ElementAt(cursor).TokenType != TokenType.Insert) 
+            {
+                throw new Exception("Expected INSERT");
+            }
+
+            cursor += 1;
+
+            if (tokens.ElementAt(cursor).TokenType != TokenType.Into)
+            {
+                throw new Exception("Expected INTO");
+            }
+
+            cursor += 1;
+
+            if (tokens.ElementAt(cursor).TokenType != TokenType.Identifier)
+            {
+                throw new Exception("Expected table name");
+            }
+
+            cursor += 1;
+
+            if (tokens.ElementAt(cursor).TokenType != TokenType.Values)
+            {
+                throw new Exception("Expected VALUES");
+            }
+
+            cursor += 1;
+
+            if (tokens.ElementAt(cursor).TokenType != TokenType.LeftParen)
+            {
+                throw new Exception("Expected (");
+            }
+
+            cursor += 1;
+
+            // TODO: parse values
+
+            cursor += 1;
+
+            if (tokens.ElementAt(cursor).TokenType != TokenType.RightParen)
+            {
+                throw new Exception("Expected )");
+            }
+
+            cursor += 1;
+
+            var insertStatement = new InsertStatement();
+
+            return new ParseInsertStatementResponse
+            {
+                InsertStatement = insertStatement,
+                Ok = true,
+                NextCursor = cursor
             };
         }
 
