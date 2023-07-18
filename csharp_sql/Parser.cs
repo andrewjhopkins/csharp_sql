@@ -172,7 +172,7 @@ namespace csharp_sql
             ExpectTokenType(tokens.ElementAt(cursor), TokenType.LeftParen);
             cursor += 1;
 
-            var parseColumnDefinitionResponse = ParseColumnDefinition(tokens, cursor);
+            var parseColumnDefinitionResponse = ParseColumnDefinitions(tokens, cursor);
 
             cursor = parseColumnDefinitionResponse.NextCursor;
             var columnDefinitions = parseColumnDefinitionResponse.ColumnDefinitions;
@@ -194,7 +194,7 @@ namespace csharp_sql
             };
         }
 
-        public ParseColumnDefinitionResponse ParseColumnDefinition(IEnumerable<Token> tokens, int initialCursor)
+        public ParseColumnDefinitionResponse ParseColumnDefinitions(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
             var columnDefinitions = new List<ColumnDefinition>();
@@ -214,8 +214,10 @@ namespace csharp_sql
 
                 var dataTypeToken = tokens.ElementAt(cursor);
 
-                //TODO: needs to be data type token
-                ExpectTokenType(dataTypeToken, TokenType.Identifier);
+                if (dataTypeToken.TokenType != TokenType.Text || dataTypeToken.TokenType != TokenType.Int)
+                {
+                    throw new Exception("Expected TEXT or INT");
+                }
                 cursor += 1;
 
                 var columnDefinition = new ColumnDefinition

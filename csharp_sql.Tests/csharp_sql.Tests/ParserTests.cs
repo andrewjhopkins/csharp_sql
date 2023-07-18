@@ -187,8 +187,35 @@
 
         [TestCase]
         public void ParserTest_ParseColumnDefinitions_ReturnsExpectedColumnDefinitions()
-        { 
+        {
+            var values = new[] { "id", "age", "username" };
+            var tokenDataTypes = new[] { TokenType.Text, TokenType.Int, TokenType.Text };
 
+            var tokens = new[] {
+                new Token { TokenType = TokenType.Identifier, Value = values[0], Location = new Location { Column = 0, Row = 1 } },
+                new Token { TokenType = TokenType.Text, Value = "text", Location = new Location { Column = 1, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 2, Row = 1 } },
+
+                new Token { TokenType = TokenType.As, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
+                new Token { TokenType = TokenType.Int, Value = "int", Location = new Location { Column = 4, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 5, Row = 1 } },
+
+                new Token { TokenType = TokenType.As, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
+                new Token { TokenType = TokenType.Int, Value = "text", Location = new Location { Column = 4, Row = 1 } },
+            };
+
+            var parser = new Parser();
+            var columnDefinitions = parser.ParseColumnDefinitions(tokens, 0);
+
+            Assert.IsTrue(columnDefinitions.ColumnDefinitions.Count() == values.Count());
+
+            for (var i = 0; i < columnDefinitions.ColumnDefinitions.Count(); i++)
+            {
+                columnDefinitions.ColumnDefinitions.ElementAt(i).Name.Value = values[i];
+                columnDefinitions.ColumnDefinitions.ElementAt(i).Name.TokenType = TokenType.Identifier;
+
+
+            }
         }
 
         [TestCase(TokenType.Numeric, "123")]
