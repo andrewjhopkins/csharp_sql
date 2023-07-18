@@ -91,19 +91,13 @@ namespace csharp_sql
             selectStatement.Items = parseSelectItemsResponse.SelectItems;
             cursor = parseSelectItemsResponse.NextCursor;
 
-            if (tokens.ElementAt(cursor).TokenType != TokenType.From)
-            {
-                throw new Exception("Expected From");
-            }
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.From);
 
             cursor += 1;
 
             var identifierToken = tokens.ElementAt(cursor);
 
-            if (identifierToken.TokenType != TokenType.Identifier)
-            {
-                throw new Exception("Expected Identifier");
-            }
+            ExpectTokenType(identifierToken, TokenType.Identifier);
 
             selectStatement.From = new FromItem { Table = identifierToken };
 
@@ -118,41 +112,22 @@ namespace csharp_sql
         public ParseInsertStatementResponse ParseInsertStatement(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
-            if (tokens.ElementAt(cursor).TokenType != TokenType.Insert) 
-            {
-                throw new Exception("Expected INSERT");
-            }
 
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.Insert);
             cursor += 1;
 
-            if (tokens.ElementAt(cursor).TokenType != TokenType.Into)
-            {
-                throw new Exception("Expected INTO");
-            }
-
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.Into);
             cursor += 1;
-
-            if (tokens.ElementAt(cursor).TokenType != TokenType.Identifier)
-            {
-                throw new Exception("Expected table name");
-            }
 
             var table = tokens.ElementAt(cursor);
+            ExpectTokenType(table, TokenType.Identifier);
 
             cursor += 1;
 
-            if (tokens.ElementAt(cursor).TokenType != TokenType.Values)
-            {
-                throw new Exception("Expected VALUES");
-            }
-
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.Values);
             cursor += 1;
 
-            if (tokens.ElementAt(cursor).TokenType != TokenType.LeftParen)
-            {
-                throw new Exception("Expected (");
-            }
-
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.LeftParen);
             cursor += 1;
 
             var parseExpressionsResponse = ParseExpressions(tokens, cursor);
@@ -163,11 +138,7 @@ namespace csharp_sql
 
             cursor = parseExpressionsResponse.NextCursor;
 
-            if (tokens.ElementAt(cursor).TokenType != TokenType.RightParen)
-            {
-                throw new Exception("Expected )");
-            }
-
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.RightParen);
             cursor += 1;
 
             var insertStatement = new InsertStatement
@@ -187,7 +158,45 @@ namespace csharp_sql
         public ParseCreateTableStatementResponse ParseCreateTableStatement(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
+
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.Create);
+            cursor += 1;
+
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.Table);
+            cursor += 1;
+
+            var tableNameToken = tokens.ElementAt(cursor);
+            ExpectTokenType(tableNameToken, TokenType.Identifier);
+            cursor += 1;
+
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.LeftParen);
+            cursor += 1;
+
+            var parseColumnDefinitionResponse = ParseColumnDefinition(tokens, cursor);
+
+            cursor = parseColumnDefinitionResponse.NextCursor;
+            var columnDefinitions = parseColumnDefinitionResponse.ColumnDefinitions;
+
+            ExpectTokenType(tokens.ElementAt(cursor), TokenType.RightParen);
+            cursor += 1;
+
+            var createTableStatement = new CreateTableStatement
+            {
+                Name = tableNameToken,
+                Columns = columnDefinitions
+            };
+
             return new ParseCreateTableStatementResponse
+            {
+                Ok = true,
+                NextCursor = cursor,
+                CreateTableStatement = createTableStatement
+            };
+        }
+
+        public ParseColumnDefinitionResponse ParseColumnDefinition(IEnumerable<Token> tokens, int initialCursor)
+        {
+            return new ParseColumnDefinitionResponse
             {
                 Ok = true
             };
@@ -214,11 +223,8 @@ namespace csharp_sql
 
                 if (selectItems.Count() > 0)
                 {
-                    if (current.TokenType != TokenType.Comma)
-                    {
-                        throw new Exception("Expected comma");
-                    }
 
+                    ExpectTokenType(current, TokenType.Comma);
                     cursor += 1;
                 }
 
@@ -244,10 +250,7 @@ namespace csharp_sql
                     {
                         cursor += 1;
                         var identifierToken = tokens.ElementAt(cursor);
-                        if (identifierToken.TokenType != TokenType.Identifier)
-                        {
-                            throw new Exception("Expected identifier");
-                        }
+                        ExpectTokenType(identifierToken, TokenType.Identifier);
 
                         selectItem.AsToken = identifierToken;
                         cursor += 1;
@@ -269,11 +272,7 @@ namespace csharp_sql
 
                 if (expressions.Count() > 0)
                 {
-                    if (current.TokenType != TokenType.Comma)
-                    {
-                        throw new Exception("Expected comma");
-                    }
-
+                    ExpectTokenType(current, TokenType.Comma);
                     cursor += 1;
                 }
 
@@ -326,6 +325,14 @@ namespace csharp_sql
                 NextCursor = initialCursor,
                 Ok = false,
             };
+        }
+
+        private void ExpectTokenType(Token token, TokenType type) 
+        {
+            if (token.TokenType != type)
+            {
+                throw new Exception($"Expected {type}");
+            }
         }
     }
 }

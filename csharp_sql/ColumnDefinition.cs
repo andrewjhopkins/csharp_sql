@@ -1,4 +1,4 @@
-﻿namespace csharp_sql.Statements
+﻿namespace csharp_sql
 {
     public class ColumnDefinition
     {
