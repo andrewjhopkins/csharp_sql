@@ -64,12 +64,10 @@ namespace csharp_sql.Tests
 
         [TestCase("'testing")]
         [TestCase("'testing' 'testing")]
-        public void LexTest_TestLexingStrings_ReturnsNoTokensIfMatchingQuoteNotFound(string source)
+        public void LexTest_TestLexingStrings_ThrowsIfMatchingQuoteNotFound(string source)
         { 
             var lexer = new Lexer(source);
-            var tokens = lexer.Lex();
-
-            Assert.That(tokens.Count(), Is.EqualTo(0));
+            Assert.Throws<Exception>(() => lexer.Lex());
         }
 
         [TestCase("select")]

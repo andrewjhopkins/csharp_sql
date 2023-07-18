@@ -10,6 +10,44 @@
         [Test]
         public void ParserTest_ParseInsertStatement_ReturnsExpectedInsertStatementResponse()
         { 
+            var values = new[] { "123", "username", "'password'" };
+
+            var tokenTypes = new[] { TokenType.Numeric, TokenType.Identifier, TokenType.String };
+
+            var tokens = new[] {
+                new Token { TokenType = TokenType.Insert, Value = "INSERT", Location = new Location {  Column = 1, Row = 1} },
+                new Token { TokenType = TokenType.Into, Value = "INTO", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = TokenType.Identifier, Value = "users", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = TokenType.Values, Value = "VALUES", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = TokenType.LeftParen, Value = "(", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = tokenTypes[0], Value = values[0], Location = new Location {  Column = 1, Row = 1} },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = tokenTypes[1], Value = values[1], Location = new Location {  Column = 1, Row = 1} },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = tokenTypes[2], Value = values[2], Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = TokenType.RightParen, Value = ")", Location = new Location {  Column = 1, Row = 1} },
+            };
+
+            var parser = new Parser();
+            var parseInsertStatementResponse = parser.ParseInsertStatement(tokens, 0);
+
+            Assert.IsTrue(parseInsertStatementResponse.Ok);
+            Assert.IsTrue(parseInsertStatementResponse.NextCursor == tokens.Count());
+            Assert.IsTrue(parseInsertStatementResponse.InsertStatement.Values.Count() == 3);
+
+            for (var i = 0; i < values.Count(); i++)
+            { 
+                parseInsertStatementResponse.InsertStatement.Values.ElementAt(i).TokenLiteral.Value = values[i];
+                parseInsertStatementResponse.InsertStatement.Values.ElementAt(i).TokenLiteral.TokenType = tokenTypes[i];
+            }
+
         }
 
 
@@ -186,6 +224,30 @@
         [Test]
         public void ParserTest_ParseExpressions_ReturnsExpectedExpressionsResponse()
         {
+            var values = new[] { "123", "username", "'password'" };
+            var tokenTypes = new[] { TokenType.Numeric, TokenType.Identifier, TokenType.String };
+
+            var tokens = new[] {
+                new Token { TokenType = tokenTypes[0], Value = values[0], Location = new Location {  Column = 1, Row = 1} },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = tokenTypes[1], Value = values[1], Location = new Location {  Column = 1, Row = 1} },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location {  Column = 1, Row = 1} },
+
+                new Token { TokenType = tokenTypes[2], Value = values[2], Location = new Location {  Column = 1, Row = 1} },
+            };
+
+            var parser = new Parser();
+            var parseExpressionsResponse = parser.ParseExpressions(tokens, 0);
+
+            Assert.IsTrue(parseExpressionsResponse.Ok);
+            Assert.IsTrue(parseExpressionsResponse.NextCursor == tokens.Count());
+            Assert.IsTrue(parseExpressionsResponse.Expressions.Count() == 3);
+
+            for (var i = 0; i < values.Count(); i++)
+            { 
+                parseExpressionsResponse.Expressions.ElementAt(i).TokenLiteral.Value = values[i];
+            }
         }
     }
 }
