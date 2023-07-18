@@ -185,6 +185,12 @@
             }
         }
 
+        [TestCase]
+        public void ParserTest_ParseColumnDefinitions_ReturnsExpectedColumnDefinitions()
+        { 
+
+        }
+
         [TestCase(TokenType.Numeric, "123")]
         [TestCase(TokenType.Identifier, "id")]
         [TestCase(TokenType.String, "'string'")]

@@ -196,8 +196,41 @@ namespace csharp_sql
 
         public ParseColumnDefinitionResponse ParseColumnDefinition(IEnumerable<Token> tokens, int initialCursor)
         {
+            var cursor = initialCursor;
+            var columnDefinitions = new List<ColumnDefinition>();
+
+            while (cursor >= tokens.Count() || tokens.ElementAt(cursor).TokenType == TokenType.RightParen)
+            {
+                if (columnDefinitions.Count() > 0)
+                { 
+                    var commaToken = tokens.ElementAt(cursor);
+                    ExpectTokenType(commaToken, TokenType.Comma);
+                    cursor += 1;
+                }
+
+                var identifierToken = tokens.ElementAt(cursor);
+                ExpectTokenType(identifierToken, TokenType.Identifier);
+                cursor += 1;
+
+                var dataTypeToken = tokens.ElementAt(cursor);
+
+                //TODO: needs to be data type token
+                ExpectTokenType(dataTypeToken, TokenType.Identifier);
+                cursor += 1;
+
+                var columnDefinition = new ColumnDefinition
+                {
+                    DataType = dataTypeToken,
+                    Name = identifierToken
+                };
+
+                columnDefinitions.Add(columnDefinition);
+            }
+
             return new ParseColumnDefinitionResponse
             {
+                ColumnDefinitions = columnDefinitions,
+                NextCursor = cursor,
                 Ok = true
             };
         }
