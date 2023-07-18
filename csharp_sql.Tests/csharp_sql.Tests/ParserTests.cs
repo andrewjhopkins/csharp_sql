@@ -8,6 +8,12 @@
         }
 
         [Test]
+        public void ParserTest_ParseInsertStatement_ReturnsExpectedInsertStatementResponse()
+        { 
+        }
+
+
+        [Test]
         public void ParserTest_ParseSelectStatement_ReturnsExpectedSelectStatementResponse()
         { 
             var values = new[] { "id", "username", "password" };
@@ -174,6 +180,12 @@
             var parseExpressionResponse = parser.ParseExpression(new[] { token }, 0);
 
             Assert.IsTrue(parseExpressionResponse.Ok == false);
+        }
+
+        
+        [Test]
+        public void ParserTest_ParseExpressions_ReturnsExpectedExpressionsResponse()
+        {
         }
     }
 }

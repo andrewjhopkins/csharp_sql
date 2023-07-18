@@ -37,7 +37,6 @@ namespace csharp_sql
 
             switch (tokens.ElementAt(0).TokenType)
             {
-                //TODO: Response Ok not needed
                 case TokenType.Select:
                 {
                     var parseSelectResponse = ParseSelectStatement(tokens, cursor);
@@ -47,19 +46,19 @@ namespace csharp_sql
                         NextCursor = parseSelectResponse.NextCursor
                     };
                 }
-                    /*
                 case TokenType.Insert:
                 { 
                     var parseInsertReponse = ParseInsertStatement(tokens, cursor);
-                    return new ParseInsertResponse
+                    return new ParseStatementResponse
                     {
-                        Statements = parseInsertReponse.InsertStatement,
+                        Statement = parseInsertReponse.InsertStatement,
                         NextCursor = parseInsertReponse.NextCursor
                     };
                 }
-                    */
-            }
 
+                // Parse Create Table
+                  
+            }
 
             throw new Exception("Could not parse statement");
         }
@@ -131,6 +130,8 @@ namespace csharp_sql
                 throw new Exception("Expected table name");
             }
 
+            var table = tokens.ElementAt(cursor);
+
             cursor += 1;
 
             if (tokens.ElementAt(cursor).TokenType != TokenType.Values)
@@ -147,9 +148,13 @@ namespace csharp_sql
 
             cursor += 1;
 
-            // TODO: parse values
+            var parseExpressionsResponse = ParseExpressions(tokens, cursor);
+            if (!parseExpressionsResponse.Ok)
+            {
+                throw new Exception("Could not parse expressions");
+            }
 
-            cursor += 1;
+            cursor = parseExpressionsResponse.NextCursor;
 
             if (tokens.ElementAt(cursor).TokenType != TokenType.RightParen)
             {
@@ -158,7 +163,11 @@ namespace csharp_sql
 
             cursor += 1;
 
-            var insertStatement = new InsertStatement();
+            var insertStatement = new InsertStatement
+            {
+                Values = parseExpressionsResponse.Expressions,
+                Table = table,
+            };
 
             return new ParseInsertStatementResponse
             {
@@ -231,6 +240,43 @@ namespace csharp_sql
 
                 selectItems.Add(selectItem);
             }
+        }
+
+        public ParseExpressionsResponse ParseExpressions(IEnumerable<Token> tokens, int initialCursor)
+        {
+            var cursor = initialCursor;
+            var expressions = new List<Expression>();
+
+            while (cursor < tokens.Count() && tokens.ElementAt(cursor).TokenType != TokenType.RightParen) 
+            { 
+                var current = tokens.ElementAt(cursor);
+
+                if (expressions.Count() > 0)
+                {
+                    if (current.TokenType != TokenType.Comma)
+                    {
+                        throw new Exception("Expected comma");
+                    }
+
+                    cursor += 1;
+                }
+
+                var parseExpressionResponse = ParseExpression(tokens, cursor);
+                if (!parseExpressionResponse.Ok)
+                {
+                    throw new Exception("Expected expression");
+                }
+
+                cursor = parseExpressionResponse.NextCursor;
+                expressions.Add(parseExpressionResponse.Expression);
+            }
+
+            return new ParseExpressionsResponse
+            {
+                Expressions = expressions,
+                NextCursor = cursor,
+                Ok = true
+            };
         }
 
         public ParseExpressionResponse ParseExpression(IEnumerable<Token> tokens, int initialCursor)
