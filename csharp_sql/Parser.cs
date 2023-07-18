@@ -70,9 +70,6 @@ namespace csharp_sql
             }
         }
 
-            throw new Exception("Could not parse statement");
-        }
-
         public ParseSelectStatementResponse ParseSelectStatement(IEnumerable<Token> tokens, int initialCursor)
         {
             var cursor = initialCursor;
