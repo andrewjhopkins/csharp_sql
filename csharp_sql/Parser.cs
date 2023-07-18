@@ -55,12 +55,19 @@ namespace csharp_sql
                         NextCursor = parseInsertReponse.NextCursor
                     };
                 }
+                case TokenType.Create:
+                {
+                    var parseCreateTableResponse = ParseCreateTableStatement(tokens, cursor);
 
-                // Parse Create Table
-                  
+                    return new ParseStatementResponse 
+                    {
+                        Statement = parseCreateTableResponse.CreateTableStatement,
+                        NextCursor = parseCreateTableResponse.NextCursor
+                    };
+                }
+                default:
+                    throw new Exception("Could not parse statement");
             }
-
-            throw new Exception("Could not parse statement");
         }
 
         public ParseSelectStatementResponse ParseSelectStatement(IEnumerable<Token> tokens, int initialCursor)
@@ -174,6 +181,15 @@ namespace csharp_sql
                 InsertStatement = insertStatement,
                 Ok = true,
                 NextCursor = cursor
+            };
+        }
+
+        public ParseCreateTableStatementResponse ParseCreateTableStatement(IEnumerable<Token> tokens, int initialCursor)
+        {
+            var cursor = initialCursor;
+            return new ParseCreateTableStatementResponse
+            {
+                Ok = true
             };
         }
 
