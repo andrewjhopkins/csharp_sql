@@ -199,7 +199,7 @@ namespace csharp_sql
             var cursor = initialCursor;
             var columnDefinitions = new List<ColumnDefinition>();
 
-            while (cursor >= tokens.Count() || tokens.ElementAt(cursor).TokenType == TokenType.RightParen)
+            while (cursor < tokens.Count() && tokens.ElementAt(cursor).TokenType != TokenType.RightParen)
             {
                 if (columnDefinitions.Count() > 0)
                 { 
@@ -214,7 +214,7 @@ namespace csharp_sql
 
                 var dataTypeToken = tokens.ElementAt(cursor);
 
-                if (dataTypeToken.TokenType != TokenType.Text || dataTypeToken.TokenType != TokenType.Int)
+                if (dataTypeToken.TokenType != TokenType.Text && dataTypeToken.TokenType != TokenType.Int)
                 {
                     throw new Exception("Expected TEXT or INT");
                 }

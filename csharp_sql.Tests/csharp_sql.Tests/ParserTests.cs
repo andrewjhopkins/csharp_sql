@@ -50,7 +50,6 @@
 
         }
 
-
         [Test]
         public void ParserTest_ParseSelectStatement_ReturnsExpectedSelectStatementResponse()
         { 
@@ -95,6 +94,54 @@
 
             Assert.IsTrue(selectStatementResponse.SelectStatement.From.Table.TokenType == TokenType.Identifier);
             Assert.IsTrue(selectStatementResponse.SelectStatement.From.Table.Value == "Users");
+        }
+
+        [Test]
+        public void ParserTest_ParseCreateTableStatement_ReturnsExpectedCreateTableStatementResponse()
+        { 
+            var values = new[] { "id", "age", "username" };
+            var tokenDataTypes = new[] { TokenType.Text, TokenType.Int, TokenType.Text };
+
+            var tokens = new[] {
+                new Token { TokenType = TokenType.Create, Value = "CREATE", Location = new Location { Column = 0, Row = 1 } },
+                new Token { TokenType = TokenType.Table, Value = "TABLE", Location = new Location { Column = 0, Row = 1 } },
+
+                new Token { TokenType = TokenType.Identifier, Value = "USERS", Location = new Location { Column = 0, Row = 1 } },
+
+                new Token { TokenType = TokenType.LeftParen, Value = "(", Location = new Location { Column = 0, Row = 1 } },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[0], Location = new Location { Column = 0, Row = 1 } },
+                new Token { TokenType = tokenDataTypes[0], Value = "text", Location = new Location { Column = 1, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 2, Row = 1 } },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
+                new Token { TokenType = tokenDataTypes[1], Value = "int", Location = new Location { Column = 4, Row = 1 } },
+                new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 5, Row = 1 } },
+
+                new Token { TokenType = TokenType.Identifier, Value = values[2], Location = new Location { Column = 6, Row = 1 } },
+                new Token { TokenType = tokenDataTypes[2], Value = "text", Location = new Location { Column = 7, Row = 1 } },
+
+                new Token { TokenType = TokenType.RightParen, Value = ")", Location = new Location { Column = 0, Row = 1 } },
+            };
+
+            var parser = new Parser();
+            var createTableStatementResponse = parser.ParseCreateTableStatement(tokens, 0);
+
+            Assert.IsTrue(createTableStatementResponse.Ok);
+
+            Assert.IsTrue(createTableStatementResponse.CreateTableStatement.Name.TokenType == TokenType.Identifier);
+            Assert.IsTrue(createTableStatementResponse.CreateTableStatement.Name.Value == "USERS");
+
+            var columnDefinitions = createTableStatementResponse.CreateTableStatement.Columns;
+
+            Assert.IsTrue(columnDefinitions.Count() == values.Count());
+
+            for (var i = 0; i < columnDefinitions.Count(); i++)
+            {
+                Assert.IsTrue(columnDefinitions.ElementAt(i).Name.Value == values[i]);
+                Assert.IsTrue(columnDefinitions.ElementAt(i).Name.TokenType == TokenType.Identifier);
+                Assert.IsTrue(columnDefinitions.ElementAt(i).DataType.TokenType == tokenDataTypes[i]);
+            }
         }
 
         [Test]
@@ -193,15 +240,15 @@
 
             var tokens = new[] {
                 new Token { TokenType = TokenType.Identifier, Value = values[0], Location = new Location { Column = 0, Row = 1 } },
-                new Token { TokenType = TokenType.Text, Value = "text", Location = new Location { Column = 1, Row = 1 } },
+                new Token { TokenType = tokenDataTypes[0], Value = "text", Location = new Location { Column = 1, Row = 1 } },
                 new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 2, Row = 1 } },
 
-                new Token { TokenType = TokenType.As, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
-                new Token { TokenType = TokenType.Int, Value = "int", Location = new Location { Column = 4, Row = 1 } },
+                new Token { TokenType = TokenType.Identifier, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
+                new Token { TokenType = tokenDataTypes[1], Value = "int", Location = new Location { Column = 4, Row = 1 } },
                 new Token { TokenType = TokenType.Comma, Value = ",", Location = new Location { Column = 5, Row = 1 } },
 
-                new Token { TokenType = TokenType.As, Value = values[1], Location = new Location { Column = 3, Row = 1 } },
-                new Token { TokenType = TokenType.Int, Value = "text", Location = new Location { Column = 4, Row = 1 } },
+                new Token { TokenType = TokenType.Identifier, Value = values[2], Location = new Location { Column = 6, Row = 1 } },
+                new Token { TokenType = tokenDataTypes[2], Value = "text", Location = new Location { Column = 7, Row = 1 } },
             };
 
             var parser = new Parser();
@@ -211,10 +258,9 @@
 
             for (var i = 0; i < columnDefinitions.ColumnDefinitions.Count(); i++)
             {
-                columnDefinitions.ColumnDefinitions.ElementAt(i).Name.Value = values[i];
-                columnDefinitions.ColumnDefinitions.ElementAt(i).Name.TokenType = TokenType.Identifier;
-
-
+                Assert.IsTrue(columnDefinitions.ColumnDefinitions.ElementAt(i).Name.Value == values[i]);
+                Assert.IsTrue(columnDefinitions.ColumnDefinitions.ElementAt(i).Name.TokenType == TokenType.Identifier);
+                Assert.IsTrue(columnDefinitions.ColumnDefinitions.ElementAt(i).DataType.TokenType == tokenDataTypes[i]);
             }
         }
 
