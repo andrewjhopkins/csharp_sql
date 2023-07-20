@@ -23,6 +23,11 @@ namespace csharp_sql
 
             while (cursor < tokens.Count()) 
             {
+                if (tokens.ElementAt(cursor).TokenType == TokenType.Semicolon)
+                {
+                    return ast;
+                }
+
                 var parseStatementResponse = ParseStatement(tokens, cursor);
                 ast.Add(parseStatementResponse.Statement);
                 cursor = parseStatementResponse.NextCursor;
@@ -35,7 +40,7 @@ namespace csharp_sql
         {
             var cursor = initialCursor;
 
-            switch (tokens.ElementAt(0).TokenType)
+            switch (tokens.ElementAt(cursor).TokenType)
             {
                 case TokenType.Select:
                 {

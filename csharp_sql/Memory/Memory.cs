@@ -1,9 +1,8 @@
 ﻿using csharp_sql.Statements;
-using System.Security.Cryptography;
 
 namespace csharp_sql.Memory
 {
-    public class Memory
+    public class MemoryBackend
     {
         public Dictionary<string, Table> Tables { get; set; }
 
