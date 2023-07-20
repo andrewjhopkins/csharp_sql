@@ -1,4 +1,5 @@
 ﻿using csharp_sql.Memory;
+using csharp_sql.Statements;
 
 namespace csharp_sql
 {
@@ -27,7 +28,23 @@ namespace csharp_sql
                 var parser = new Parser();
                 var ast = parser.Parse(tokens);
 
-                Console.WriteLine(ast.Count());
+                foreach (var statement in ast)
+                {
+                    if (statement.GetType() == typeof(SelectStatement))
+                    {
+                        Console.WriteLine("Select Statement");
+                    }
+
+                    else if (statement.GetType() == typeof(CreateTableStatement))
+                    {
+                        Console.WriteLine("Create Table Statement");
+                    }
+
+                    else if (statement.GetType() == typeof(InsertStatement))
+                    {
+                        Console.WriteLine("Insert Statement");
+                    }
+                }
             }
         }
     }
