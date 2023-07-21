@@ -9,7 +9,6 @@ namespace csharp_sql.Memory
         public void CreateTable(CreateTableStatement createTableStatement)
         {
             var table = new Table();
-
             if (createTableStatement.Columns == null)
             {
                 return;
@@ -116,7 +115,7 @@ namespace csharp_sql.Memory
                                 }
                                 else
                                 { 
-                                    result.Add(new Cell { StringValue = row.ElementAt(k) });
+                                result.Add(new Cell { StringValue = row.ElementAt(k) });
                                 }
 
                                 found = true;
