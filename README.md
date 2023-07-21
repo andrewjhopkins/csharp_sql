@@ -24,6 +24,8 @@ $ | id | name |
 #### TODO:
 Short term
 - [ ] Support asterisks in Select
+- [ ] Memory background unit tests
+- [ ] Full scenario tests
 - [ ] More informative response for create and insert
 - [ ] On error. Return syntax error location
 - [ ] General code cleanup
