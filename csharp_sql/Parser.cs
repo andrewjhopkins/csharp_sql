@@ -8,7 +8,7 @@ namespace csharp_sql
         {
             if (tokens.Count() == 0)
             {
-                throw new Exception();
+                throw new Exception("No tokens to parse");
             }
 
             // append semicolon if needed
@@ -221,7 +221,7 @@ namespace csharp_sql
 
                 if (dataTypeToken.TokenType != TokenType.Text && dataTypeToken.TokenType != TokenType.Int)
                 {
-                    throw new Exception("Expected TEXT or INT");
+                    throw new Exception($"Expected TEXT or INT loc: {dataTypeToken.Location.Row}:{dataTypeToken.Location.Column}");
                 }
                 cursor += 1;
 
@@ -270,7 +270,7 @@ namespace csharp_sql
 
                 var selectItem = new SelectItem();
 
-                if (tokens.ElementAt(cursor).TokenType == TokenType.Asterisk)
+                if (current.TokenType == TokenType.Asterisk)
                 {
                     selectItem.Asterisk = true;
                     cursor += 1;
@@ -280,7 +280,7 @@ namespace csharp_sql
                     var parseExpressionResponse = ParseExpression(tokens, cursor);
                     if (!parseExpressionResponse.Ok)
                     {
-                        throw new Exception("Expected expression");
+                        throw new Exception($"Expected expression loc: {current.Location.Row}:{current.Location.Column}");
                     }
 
                     cursor = parseExpressionResponse.NextCursor;
@@ -319,7 +319,7 @@ namespace csharp_sql
                 var parseExpressionResponse = ParseExpression(tokens, cursor);
                 if (!parseExpressionResponse.Ok)
                 {
-                    throw new Exception("Expected expression");
+                    throw new Exception($"Expected expression loc: {current.Location.Row}:{current.Location.Column}");
                 }
 
                 cursor = parseExpressionResponse.NextCursor;
@@ -371,7 +371,7 @@ namespace csharp_sql
         {
             if (token.TokenType != type)
             {
-                throw new Exception($"Expected {type}");
+                throw new Exception($"Expected {type} loc: {token.Location.Row}:{token.Location.Column}");
             }
         }
     }

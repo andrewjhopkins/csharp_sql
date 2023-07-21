@@ -26,7 +26,7 @@ namespace csharp_sql.Memory
                         columnType = ColumnType.Text;
                         break;
                     default:
-                        throw new Exception("Invalid column type");
+                        throw new Exception($"Invalid column type loc: {column.DataType.Location.Row}:{column.DataType.Location.Column}");
                 }
 
                 table.ColumnTypes.Add(columnType);
@@ -43,7 +43,7 @@ namespace csharp_sql.Memory
 
             if (!Tables.ContainsKey(insertStatement.Table.Value))
             {
-                throw new Exception("Table does not exist");
+                throw new Exception($"Table: {insertStatement.Table.Value} does not exist");
             }
 
             var table = Tables[insertStatement.Table.Value];
@@ -52,7 +52,7 @@ namespace csharp_sql.Memory
 
             if (insertStatement.Values.Count() != table.Columns.Count()) 
             {
-                throw new Exception("missing values");
+                throw new Exception($"Missing values. {insertStatement.Values.Count()} given. {table.Columns.Count()} needed");
             }
 
             for (var i = 0; i <  insertStatement.Values.Count(); i++) 
@@ -129,13 +129,13 @@ namespace csharp_sql.Memory
 
                         if (!found)
                         {
-                            throw new Exception("Column does not exist");
+                            throw new Exception($"Column: {literal.Value} does not exist");
                         }
 
                         continue;
                     }
 
-                    throw new Exception("Column does not exist");
+                    throw new Exception($"Column: {literal.Value} does not exist");
                 }
 
                 results.Add(result);

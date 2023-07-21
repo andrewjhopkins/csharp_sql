@@ -27,7 +27,7 @@ Short term
 - [ ] Memory background unit tests
 - [ ] Full scenario tests
 - [-] More informative response for create and insert
-- [ ] On error. Return syntax error location
+- [-] On error. Return syntax error location
 - [ ] General code cleanup
 
 Long term
