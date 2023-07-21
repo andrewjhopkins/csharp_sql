@@ -1,4 +1,5 @@
 ﻿using csharp_sql.Memory;
+using csharp_sql.Statements;
 
 namespace csharp_sql
 {
@@ -21,13 +22,82 @@ namespace csharp_sql
                     continue;
                 }
 
-                var lexer = new Lexer(text);
-                var tokens = lexer.Lex();
+                try
+                {
+                    var lexer = new Lexer(text);
+                    var tokens = lexer.Lex();
 
-                var parser = new Parser();
-                var ast = parser.Parse(tokens);
+                    var parser = new Parser();
+                    var ast = parser.Parse(tokens);
 
-                Console.WriteLine(ast.Count());
+                    foreach (var statement in ast)
+                    {
+                        if (statement.GetType() == typeof(SelectStatement))
+                        {
+                            var results = memory.Select((SelectStatement)statement);
+
+                            foreach (var column in results.Columns)
+                            {
+                                Console.Write($"| {column.Name} ");
+                            }
+
+                            Console.WriteLine("|");
+
+                            for (var i = 0; i < 20; i++)
+                            {
+                                Console.Write("=");
+                            }
+
+                            Console.WriteLine();
+
+                            foreach (var row in results.Rows)
+                            {
+                                Console.Write("|");
+                                for (var i = 0; i < row.Count(); i++)
+                                {
+                                    var cell = row.ElementAt(i);
+
+                                    var type = results.Columns.ElementAt(i).Type;
+                                    var output = "";
+
+                                    switch (type)
+                                    {
+                                        case ColumnType.Int:
+                                            output = cell.IntValue.ToString();
+                                            break;
+                                        case ColumnType.Text:
+                                            output = cell.StringValue;
+                                            break;
+                                    }
+
+                                    Console.Write($" {output} | "); ;
+                                }
+
+                                Console.WriteLine();
+
+                            }
+
+                            Console.WriteLine("ok");
+                        }
+
+                        else if (statement.GetType() == typeof(CreateTableStatement))
+                        {
+                            memory.CreateTable((CreateTableStatement) statement);
+                            Console.WriteLine("ok, table created");
+                        }
+
+                        else if (statement.GetType() == typeof(InsertStatement))
+                        {
+                            memory.Insert((InsertStatement) statement);
+                            Console.WriteLine("ok, new values inserted");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
             }
         }
     }

@@ -4,13 +4,11 @@ namespace csharp_sql.Memory
 {
     public class MemoryBackend
     {
-        public Dictionary<string, Table> Tables { get; set; }
+        public Dictionary<string, Table> Tables { get; set; } = new Dictionary<string, Table>();
 
         public void CreateTable(CreateTableStatement createTableStatement)
         {
             var table = new Table();
-            Tables[createTableStatement.Name.Value] = table;
-
             if (createTableStatement.Columns == null)
             {
                 return;
@@ -20,31 +18,32 @@ namespace csharp_sql.Memory
             {
                 var column = createTableStatement.Columns.ElementAt(i);
                 
-                table.Columns.Append(column.Name.Value);
+                table.Columns.Add(column.Name.Value);
 
                 ColumnType columnType;
 
-                switch (column.DataType.Value)
+                switch (column.DataType.TokenType)
                 {
-                    case "int":
+                    case TokenType.Int:
                         columnType = ColumnType.Int;
                         break;
-                    case "text":
+                    case TokenType.Text:
                         columnType = ColumnType.Text;
                         break;
                     default:
                         throw new Exception("Invalid column type");
                 }
 
-                table.ColumnTypes.Append(columnType);
+                table.ColumnTypes.Add(columnType);
             }
+
+            Tables[createTableStatement.Name.Value] = table;
 
             return;
         }
 
         public void Insert(InsertStatement insertStatement) 
         {
-            // TODO: check if exists first
             if (!Tables.ContainsKey(insertStatement.Table.Value))
             {
                 throw new Exception("Table does not exist");
@@ -62,13 +61,10 @@ namespace csharp_sql.Memory
             for (var i = 0; i <  insertStatement.Values.Count(); i++) 
             {
                 var value = insertStatement.Values.ElementAt(i);
-
-                // TODO: Skip non literal kinds
-
                 row.Add(value.TokenLiteral.Value);
             }
 
-            table.Rows.Append(row);
+            table.Rows.Add(row);
 
             return;
         }
@@ -95,7 +91,7 @@ namespace csharp_sql.Memory
                 { 
                     var selectItem = selectStatement.Items.ElementAt(j);
 
-                    // TODO: skip literal
+                    // TODO: support asterisks
 
                     var literal = selectItem.Expression.TokenLiteral;
 
@@ -113,7 +109,15 @@ namespace csharp_sql.Memory
                                     columns.Add(new ResultColumn { Name = literal.Value, Type = table.ColumnTypes.ElementAt(k) });
                                 }
 
+                                if (table.ColumnTypes.ElementAt(k) == ColumnType.Int)
+                                {
+                                    result.Add(new Cell { IntValue = Int32.Parse(row.ElementAt(k)) });
+                                }
+                                else
+                                { 
                                 result.Add(new Cell { StringValue = row.ElementAt(k) });
+                                }
+
                                 found = true;
                                 break;
                             }
