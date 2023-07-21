@@ -9,8 +9,8 @@ namespace csharp_sql
         {
             var memory = new MemoryBackend();
 
-            Console.WriteLine("Welcome to csharp sql.");
-            Console.WriteLine("Press ctrl + c to quit.");
+            Console.WriteLine("Welcome to C# sql");
+            Console.WriteLine("Press ctrl + c to quit");
 
             while (true)
             {
