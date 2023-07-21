@@ -4,7 +4,7 @@ namespace csharp_sql.Memory
 {
     public class MemoryBackend
     {
-        public Dictionary<string, Table> Tables { get; set; }
+        public Dictionary<string, Table> Tables { get; set; } = new Dictionary<string, Table>();
 
         public void CreateTable(CreateTableStatement createTableStatement)
         {
@@ -24,12 +24,12 @@ namespace csharp_sql.Memory
 
                 ColumnType columnType;
 
-                switch (column.DataType.Value)
+                switch (column.DataType.TokenType)
                 {
-                    case "int":
+                    case TokenType.Int:
                         columnType = ColumnType.Int;
                         break;
-                    case "text":
+                    case TokenType.Text:
                         columnType = ColumnType.Text;
                         break;
                     default:

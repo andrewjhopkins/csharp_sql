@@ -22,29 +22,39 @@ namespace csharp_sql
                     continue;
                 }
 
-                var lexer = new Lexer(text);
-                var tokens = lexer.Lex();
-
-                var parser = new Parser();
-                var ast = parser.Parse(tokens);
-
-                foreach (var statement in ast)
+                try
                 {
-                    if (statement.GetType() == typeof(SelectStatement))
-                    {
-                        Console.WriteLine("Select Statement");
-                    }
+                    var lexer = new Lexer(text);
+                    var tokens = lexer.Lex();
 
-                    else if (statement.GetType() == typeof(CreateTableStatement))
-                    {
-                        Console.WriteLine("Create Table Statement");
-                    }
+                    var parser = new Parser();
+                    var ast = parser.Parse(tokens);
 
-                    else if (statement.GetType() == typeof(InsertStatement))
+                    foreach (var statement in ast)
                     {
-                        Console.WriteLine("Insert Statement");
+                        if (statement.GetType() == typeof(SelectStatement))
+                        {
+                            Console.WriteLine("Select Statement");
+                        }
+
+                        else if (statement.GetType() == typeof(CreateTableStatement))
+                        {
+                            memory.CreateTable((CreateTableStatement) statement);
+                            Console.WriteLine("ok, table created");
+                        }
+
+                        else if (statement.GetType() == typeof(InsertStatement))
+                        {
+                            memory.Insert((InsertStatement) statement);
+                            Console.WriteLine("ok, new values inserted");
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
             }
         }
     }
