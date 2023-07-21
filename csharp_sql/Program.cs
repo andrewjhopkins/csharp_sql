@@ -1,5 +1,6 @@
 ﻿using csharp_sql.Memory;
 using csharp_sql.Statements;
+using System.Text;
 
 namespace csharp_sql
 {
@@ -82,14 +83,30 @@ namespace csharp_sql
 
                         else if (statement.GetType() == typeof(CreateTableStatement))
                         {
-                            memory.CreateTable((CreateTableStatement) statement);
-                            Console.WriteLine("ok, table created");
+                            var tableName = memory.CreateTable((CreateTableStatement) statement);
+                            Console.WriteLine($"table: {tableName} created");
                         }
 
                         else if (statement.GetType() == typeof(InsertStatement))
                         {
-                            memory.Insert((InsertStatement) statement);
-                            Console.WriteLine("ok, new values inserted");
+                            var insertResponse = memory.Insert((InsertStatement) statement);
+
+                            var infoString = new StringBuilder();
+
+                            for (var i = 0; i < insertResponse.Values.Count(); i++)
+                            {
+                                var value = insertResponse.Values.ElementAt(i);
+                                if (i == (insertResponse.Values.Count() - 1))
+                                {
+                                    infoString.Append($"{value}");
+                                }
+                                else
+                                { 
+                                    infoString.Append($"{value}, ");
+                                }
+                            }
+
+                            Console.WriteLine($"Values ({infoString}) inserted into table: {insertResponse.Table}");
                         }
                     }
                 }

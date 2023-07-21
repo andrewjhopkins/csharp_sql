@@ -6,14 +6,9 @@ namespace csharp_sql.Memory
     {
         public Dictionary<string, Table> Tables { get; set; } = new Dictionary<string, Table>();
 
-        public void CreateTable(CreateTableStatement createTableStatement)
+        public string CreateTable(CreateTableStatement createTableStatement)
         {
             var table = new Table();
-            if (createTableStatement.Columns == null)
-            {
-                return;
-            }
-
             for (var i = 0; i < createTableStatement.Columns.Count(); i++)
             {
                 var column = createTableStatement.Columns.ElementAt(i);
@@ -31,7 +26,7 @@ namespace csharp_sql.Memory
                         columnType = ColumnType.Text;
                         break;
                     default:
-                        throw new Exception("Invalid column type");
+                        throw new Exception($"Invalid column type loc: {column.DataType.Location.Row}:{column.DataType.Location.Column}");
                 }
 
                 table.ColumnTypes.Add(columnType);
@@ -39,14 +34,16 @@ namespace csharp_sql.Memory
 
             Tables[createTableStatement.Name.Value] = table;
 
-            return;
+            return createTableStatement.Name.Value;
         }
 
-        public void Insert(InsertStatement insertStatement) 
+        public InsertResponse Insert(InsertStatement insertStatement) 
         {
+            var insertedValues = new List<string>();
+
             if (!Tables.ContainsKey(insertStatement.Table.Value))
             {
-                throw new Exception("Table does not exist");
+                throw new Exception($"Table: {insertStatement.Table.Value} does not exist");
             }
 
             var table = Tables[insertStatement.Table.Value];
@@ -55,18 +52,24 @@ namespace csharp_sql.Memory
 
             if (insertStatement.Values.Count() != table.Columns.Count()) 
             {
-                throw new Exception("missing values");
+                throw new Exception($"Missing values. {insertStatement.Values.Count()} given. {table.Columns.Count()} needed");
             }
 
             for (var i = 0; i <  insertStatement.Values.Count(); i++) 
             {
                 var value = insertStatement.Values.ElementAt(i);
                 row.Add(value.TokenLiteral.Value);
+
+                insertedValues.Add(value.TokenLiteral.Value);
             }
 
             table.Rows.Add(row);
 
-            return;
+            return new InsertResponse
+            {
+                Table = insertStatement.Table.Value,
+                Values = insertedValues
+            };
         }
 
         public SelectResponse Select(SelectStatement selectStatement)
@@ -126,13 +129,13 @@ namespace csharp_sql.Memory
 
                         if (!found)
                         {
-                            throw new Exception("Column does not exist");
+                            throw new Exception($"Column: {literal.Value} does not exist");
                         }
 
                         continue;
                     }
 
-                    throw new Exception("Column does not exist");
+                    throw new Exception($"Column: {literal.Value} does not exist");
                 }
 
                 results.Add(result);

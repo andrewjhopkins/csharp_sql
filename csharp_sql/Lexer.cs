@@ -59,7 +59,7 @@
                         var nextQuoteIndex = Source.IndexOf('\'', cursor + 1);
                         if (nextQuoteIndex < 0 || nextQuoteIndex >= Source.Length)
                         {
-                            throw new Exception("Expected '");
+                            throw new Exception($"Expected ' loc: {row}:{col}");
                         }
                         if (nextQuoteIndex > 0 && nextQuoteIndex < Source.Length)
                         {
