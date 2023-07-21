@@ -25,7 +25,7 @@ $ | id | name |
 Short term
 - [ ] Support asterisks in Select
 - [ ] More informative response for create and insert
-- [ ] On error.Rreturn syntax error location
+- [ ] On error. Return syntax error location
 - [ ] General code cleanup
 
 Long term
