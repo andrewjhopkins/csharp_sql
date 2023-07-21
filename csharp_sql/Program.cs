@@ -34,7 +34,50 @@ namespace csharp_sql
                     {
                         if (statement.GetType() == typeof(SelectStatement))
                         {
-                            Console.WriteLine("Select Statement");
+                            var results = memory.Select((SelectStatement)statement);
+
+                            foreach (var column in results.Columns)
+                            {
+                                Console.Write($"| {column.Name} ");
+                            }
+
+                            Console.WriteLine("|");
+
+                            for (var i = 0; i < 20; i++)
+                            {
+                                Console.Write("=");
+                            }
+
+                            Console.WriteLine();
+
+                            foreach (var row in results.Rows)
+                            {
+                                Console.Write("|");
+                                for (var i = 0; i < row.Count(); i++)
+                                {
+                                    var cell = row.ElementAt(i);
+
+                                    var type = results.Columns.ElementAt(i).Type;
+                                    var output = "";
+
+                                    switch (type)
+                                    {
+                                        case ColumnType.Int:
+                                            output = cell.IntValue.ToString();
+                                            break;
+                                        case ColumnType.Text:
+                                            output = cell.StringValue;
+                                            break;
+                                    }
+
+                                    Console.Write($" {output} | "); ;
+                                }
+
+                                Console.WriteLine();
+
+                            }
+
+                            Console.WriteLine("ok");
                         }
 
                         else if (statement.GetType() == typeof(CreateTableStatement))

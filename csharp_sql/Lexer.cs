@@ -63,7 +63,7 @@
                         }
                         if (nextQuoteIndex > 0 && nextQuoteIndex < Source.Length)
                         {
-                            token.Value = Source.Substring(cursor, nextQuoteIndex + 1 - cursor);
+                            token.Value = Source.Substring(cursor + 1, nextQuoteIndex - cursor - 1);
                             token.TokenType = TokenType.String;
                         }
 

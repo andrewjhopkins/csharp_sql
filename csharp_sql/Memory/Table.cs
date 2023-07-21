@@ -2,10 +2,10 @@
 {
     public class Table
     {
-        public IEnumerable<string> Columns { get; set; }
-        public IEnumerable<ColumnType> ColumnTypes { get; set; }
+        public List<string> Columns { get; set; }
+        public List<ColumnType> ColumnTypes { get; set; }
 
-        public IEnumerable<IEnumerable<string>> Rows { get; set; }
+        public List<List<string>> Rows { get; set; }
 
         public Table()
         { 
