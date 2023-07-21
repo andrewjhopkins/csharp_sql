@@ -11,9 +11,9 @@ $ dotnet run --project csharp_sql
 $ Welcome to C# sql
 $ Press ctrl + c to quit
 $ # CREATE TABLE users (id INT, name TEXT);
-$ ok, table created
-$ # INSERT INTO users (1, 'andrewjhopkins');
-$ ok, new values inserted
+$ table: users created
+$ # INSERT INTO users VALUES (1, 'andrewjhopkins');
+$ Values (1, andrewjhopkins) inserted into table: users
 $ # SELECT id, name FROM users;
 $ | id | name |
   ====================
