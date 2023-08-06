@@ -83,6 +83,38 @@ namespace csharp_sql.Memory
             var results = new List<List<Cell>>();
             var columns = new List<ResultColumn>();
 
+            // Handle asterisks MySQL equivalent. Asterisk must be first, populate missing fields but only display fields once
+            if (selectStatement.Items.Count() > 0 && selectStatement.Items.ElementAt(0).Asterisk)
+            {
+                var selectItems = new List<SelectItem>();
+                foreach(var column in table.Columns)
+                {
+                    var selectItem = new SelectItem()
+                    {
+                        Expression = new Expression()
+                        {
+                            TokenLiteral = new Token()
+                            {
+                                TokenType = TokenType.Identifier,
+                                // must always be the first identifier after "SELECT"
+                                Location = new Location()
+                                {
+                                    Row = 0,
+                                    Column = "SELECT".Count() + 1
+                                },
+                                Value = column,
+                            }
+                        },
+                        Asterisk = false,
+                        AsToken = null
+                    };
+
+                    selectItems.Add(selectItem);
+                }
+
+                selectStatement.Items = selectItems;
+            }
+
             for (var i = 0; i < table.Rows.Count(); i++)
             {
                 var row = table.Rows.ElementAt(i);
@@ -94,7 +126,11 @@ namespace csharp_sql.Memory
                 { 
                     var selectItem = selectStatement.Items.ElementAt(j);
 
-                    // TODO: support asterisks
+                    // Skip other asterisks
+                    if (selectItem.Asterisk)
+                    {
+                        continue;
+                    }
 
                     var literal = selectItem.Expression.TokenLiteral;
 
