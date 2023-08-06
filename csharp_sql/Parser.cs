@@ -270,6 +270,8 @@ namespace csharp_sql
 
                 var selectItem = new SelectItem();
 
+                current = tokens.ElementAt(cursor);
+
                 if (current.TokenType == TokenType.Asterisk)
                 {
                     selectItem.Asterisk = true;

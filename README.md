@@ -23,7 +23,7 @@ $ | id | name |
 
 #### TODO:
 Short term
-- [ ] Support asterisks in Select
+- [x] Support asterisks in Select
 - [ ] Memory background unit tests
 - [ ] Full scenario tests
 - [x] More informative response for create and insert
